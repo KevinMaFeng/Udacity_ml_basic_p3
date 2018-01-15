@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[6]:
 
 
 # 任意选一个你喜欢的整数，这能帮你得到稳定的结果
@@ -20,7 +20,7 @@ seed = 9999
 # 
 # ## 1.1 创建一个 4*4 的单位矩阵
 
-# In[2]:
+# In[1]:
 
 
 # 这个项目设计来帮你熟悉 python list 和线性代数
@@ -50,7 +50,7 @@ I = [[1, 0, 0, 0],
 
 # ## 1.2 返回矩阵的行数和列数
 
-# In[3]:
+# In[2]:
 
 
 # TODO 返回矩阵的行数和列数
@@ -62,7 +62,7 @@ def shape(M):
         return len(matrix),len(matrix[0])
 
 
-# In[4]:
+# In[7]:
 
 
 # 运行以下代码测试你的 shape 函数
@@ -71,7 +71,7 @@ get_ipython().magic(u'run -i -e test.py LinearRegressionTestCase.test_shape')
 
 # ## 1.3 每个元素四舍五入到特定小数数位
 
-# In[5]:
+# In[8]:
 
 
 # TODO 每个元素四舍五入到特定小数数位
@@ -86,7 +86,7 @@ def matxRound(M, decPts=4):
     return None
 
 
-# In[6]:
+# In[9]:
 
 
 # 运行以下代码测试你的 matxRound 函数
@@ -95,7 +95,7 @@ get_ipython().magic(u'run -i -e test.py LinearRegressionTestCase.test_matxRound'
 
 # ## 1.4 计算矩阵的转置
 
-# In[35]:
+# In[10]:
 
 
 # TODO 计算矩阵的转置
@@ -107,7 +107,7 @@ def transpose(M):
 
 
 
-# In[36]:
+# In[11]:
 
 
 # 运行以下代码测试你的 transpose 函数
@@ -116,7 +116,7 @@ get_ipython().magic(u'run -i -e test.py LinearRegressionTestCase.test_transpose'
 
 # ## 1.5 计算矩阵乘法 AB
 
-# In[40]:
+# In[12]:
 
 
 # TODO 计算矩阵乘法 AB，如果无法相乘则raise ValueError
@@ -132,7 +132,7 @@ def matxMultiply(A, B):
     return result
 
 
-# In[41]:
+# In[13]:
 
 
 # 运行以下代码测试你的 matxMultiply 函数
@@ -166,7 +166,7 @@ get_ipython().magic(u'run -i -e test.py LinearRegressionTestCase.test_matxMultip
 #     ...    & ... & ... & ...& ...\\
 #     a_{n1}    & a_{n2} & ... & a_{nn} & b_{n} \end{bmatrix}$
 
-# In[45]:
+# In[14]:
 
 
 # TODO 构造增广矩阵，假设A，b行数相同
@@ -177,7 +177,7 @@ def augmentMatrix(A, b):
     return [ra + rb for ra,rb in zip(A,b)]
 
 
-# In[46]:
+# In[15]:
 
 
 # 运行以下代码测试你的 augmentMatrix 函数
@@ -189,7 +189,7 @@ get_ipython().magic(u'run -i -e test.py LinearRegressionTestCase.test_augmentMat
 # - 把某行乘以一个非零常数
 # - 把某行加上另一行的若干倍：
 
-# In[13]:
+# In[16]:
 
 
 # TODO r1 <---> r2
@@ -203,14 +203,14 @@ def swapRows(M, r1, r2):
     pass
 
 
-# In[14]:
+# In[17]:
 
 
 # 运行以下代码测试你的 swapRows 函数
 get_ipython().magic(u'run -i -e test.py LinearRegressionTestCase.test_swapRows')
 
 
-# In[15]:
+# In[18]:
 
 
 # TODO r1 <--- r1 * scale
@@ -226,14 +226,14 @@ def scaleRow(M, r, scale):
     pass
 
 
-# In[16]:
+# In[19]:
 
 
 # 运行以下代码测试你的 scaleRow 函数
 get_ipython().magic(u'run -i -e test.py LinearRegressionTestCase.test_scaleRow')
 
 
-# In[17]:
+# In[20]:
 
 
 # TODO r1 <--- r1 + r2*scale
@@ -248,7 +248,7 @@ def addScaledRow(M, r1, r2, scale):
     pass
 
 
-# In[18]:
+# In[21]:
 
 
 # 运行以下代码测试你的 addScaledRow 函数
@@ -415,7 +415,7 @@ printInMatrixFormat(Ab,padding=3,truncating=0)
 
 # ### 2.3.3 实现 Gaussian Jordan 消元法
 
-# In[63]:
+# In[22]:
 
 
 # TODO 实现 Gaussain Jordan 方法求解 Ax = b
@@ -431,6 +431,32 @@ printInMatrixFormat(Ab,padding=3,truncating=0)
     返回列向量 x 使得 Ax = b 
     返回None，如果 A，b 高度不同
     返回None，如果 A 为奇异矩阵
+    ================= recommended solution by reviewer ================
+    def gj_Solve(A,b,decPts=4,epsilon=1.0e-16):
+    if len(A) != len(b):
+        raise ValueError
+
+    Ab = augmentMatrix(A,b)
+
+    for c in range(len(A[0])):
+        AbT = transpose(Ab)
+        col = AbT[c]
+        maxValue = max(col[c:],key=abs)
+        if abs(maxValue) < epsilon:
+            return None
+
+        maxIndex = col[c:].index(maxValue)+c
+
+        swapRows(Ab,c,maxIndex)
+        scaleRow(Ab,c,1.0/Ab[c][c])
+
+        for i in range(len(A)):
+            if Ab[i][c] != 0 and i != c:
+                addScaledRow(Ab,i,c,-Ab[i][c])
+
+    matxRound(Ab)
+
+    return [[value] for value in transpose(Ab)[-1]]
 """
 def is_near_zero(deci_value, epsilon):
     """check the decimal value is close to the threshold or not"""
@@ -487,7 +513,7 @@ def gj_Solve(A, b, decPts = 10, epsilon = 1.0e-16):
     return fetch_resolved_vector(aug_mat)
 
 
-# In[64]:
+# In[23]:
 
 
 # 运行以下代码测试你的 gj_Solve 函数
@@ -529,7 +555,7 @@ get_ipython().magic(u'run -i -e test.py LinearRegressionTestCase.test_gj_Solve')
 
 # ## 3.1 随机生成样本点
 
-# In[23]:
+# In[24]:
 
 
 # 不要修改这里！
@@ -552,7 +578,7 @@ plt.show()
 # 
 # ### 3.2.1 猜测一条直线
 
-# In[25]:
+# In[26]:
 
 
 #TODO 请选择最适合的直线 y = mx + b
@@ -579,7 +605,7 @@ plt.show()
 # MSE = \frac{1}{n}\sum_{i=1}^{n}{(y_i - mx_i - b)^2}
 # $$
 
-# In[26]:
+# In[27]:
 
 
 # TODO 实现以下函数并输出所选直线的MSE
@@ -818,7 +844,7 @@ print(calculateMSE(X,Y,m1,b1))
 # 
 # 在3.3 中，我们知道线性回归问题等价于求解 $X^TXh = X^TY$ (如果你选择不做3.3，就勇敢的相信吧，哈哈)
 
-# In[68]:
+# In[28]:
 
 
 # TODO 实现线性回归
@@ -849,7 +875,7 @@ print(m2,b2)
 # 你求得的回归结果是什么？
 # 请使用运行以下代码将它画出来。
 
-# In[69]:
+# In[29]:
 
 
 # 请不要修改下面的代码
@@ -867,7 +893,7 @@ plt.show()
 
 # 你求得的回归结果对当前数据集的MSE是多少？
 
-# In[70]:
+# In[30]:
 
 
 print(calculateMSE(X,Y,m2,b2))
